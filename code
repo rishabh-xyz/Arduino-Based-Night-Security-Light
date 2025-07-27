@@ -1,0 +1,48 @@
+#define IR_SENSOR_PIN 2  // IR sensor digital output pin
+#define BUZZER_PIN 3     // Buzzer pin
+#define LED_PIN 4        // LED pin
+#define LDR_PIN A0       // LDR analog pin
+#define LDR_THRESHOLD 500 // Adjust this threshold based on ambient lighting
+
+void setup() {
+    pinMode(IR_SENSOR_PIN, INPUT);
+    pinMode(BUZZER_PIN, OUTPUT);
+    pinMode(LED_PIN, OUTPUT);
+    Serial.begin(9600);
+}
+
+void loop() {
+    int ldrValue = analogRead(LDR_PIN);      // Read LDR value
+    int objectDetected = digitalRead(IR_SENSOR_PIN); // Read IR sensor state
+
+    Serial.print("LDR Value: ");
+    Serial.println(ldrValue);
+    
+    Serial.print("IR Sensor State: ");
+    Serial.println(objectDetected);
+
+    // Check if it's dark (night mode)
+    if (ldrValue > LDR_THRESHOLD) { 
+        Serial.println("Night Mode Activated");
+
+        // Check if an object is detected
+        if (objectDetected == LOW) { 
+            digitalWrite(LED_PIN, HIGH);
+            digitalWrite(BUZZER_PIN, HIGH);
+            Serial.println("Object Detected! Alarm ON.");
+            
+            delay(10000); // Keep the alarm ON for 10 seconds
+
+            digitalWrite(LED_PIN, LOW);
+            digitalWrite(BUZZER_PIN, LOW);
+            Serial.println("Alarm OFF.");
+        }
+    } else {
+        Serial.println("Daylight - System OFF");
+        digitalWrite(LED_PIN, LOW);
+        digitalWrite(BUZZER_PIN, LOW);
+    }
+
+    delay(500);  // Small delay to prevent excessive triggering
+}
+}
